@@ -1,11 +1,11 @@
 import { SyncQueue, SyncJob } from './SyncQueue';
 
-export class SyncManager {
-  private queue: SyncQueue;
+export class SyncManager<T = unknown> {
+  private queue: SyncQueue<T>;
   private isOnline: boolean = false;
   private isProcessing: boolean = false;
 
-  constructor(queue: SyncQueue) {
+  constructor(queue: SyncQueue<T>) {
     this.queue = queue;
   }
 
@@ -61,7 +61,7 @@ export class SyncManager {
     this.isProcessing = false;
   }
 
-  private async mockFrappeApiCall(job: SyncJob): Promise<void> {
+  private async mockFrappeApiCall(job: SyncJob<T>): Promise<void> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (Math.random() > 0.7) {

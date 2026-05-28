@@ -49,4 +49,25 @@ describe('Offline-First Sync Engine', () => {
 
     expect(queue.getLength()).toBe(0);
   });
+
+  test('should support and preserve typed payloads', () => {
+    interface AssignmentPayload {
+      answer: string;
+      assignment_id: string;
+    }
+    const typedQueue = new SyncQueue<AssignmentPayload>();
+    typedQueue.enqueue({
+      url: '/api/resource/LMS Assignment Submission',
+      method: 'POST',
+      payload: { answer: 'B', assignment_id: '456' },
+    });
+
+    const job = typedQueue.peek();
+    expect(job).toBeDefined();
+    if (job) {
+      const payload: AssignmentPayload = job.payload;
+      expect(payload.answer).toBe('B');
+      expect(payload.assignment_id).toBe('456');
+    }
+  });
 });

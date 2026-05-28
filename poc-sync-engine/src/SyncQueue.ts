@@ -1,21 +1,21 @@
-export interface SyncJob {
+export interface SyncJob<T = unknown> {
   id: string;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  payload: any;
+  payload: T;
   timestamp: number;
   retryCount: number;
 }
 
-export class SyncQueue {
-  private queue: SyncJob[] = [];
+export class SyncQueue<T = unknown> {
+  private queue: SyncJob<T>[] = [];
 
   constructor() {
     this.loadFromStorage();
   }
 
-  public enqueue(job: Omit<SyncJob, 'id' | 'timestamp' | 'retryCount'>): void {
-    const newJob: SyncJob = {
+  public enqueue(job: Omit<SyncJob<T>, 'id' | 'timestamp' | 'retryCount'>): void {
+    const newJob: SyncJob<T> = {
       ...job,
       id: Math.random().toString(36).substring(2, 9),
       timestamp: Date.now(),
@@ -25,17 +25,17 @@ export class SyncQueue {
     this.persistToStorage();
   }
 
-  public peek(): SyncJob | undefined {
+  public peek(): SyncJob<T> | undefined {
     return this.queue[0];
   }
 
-  public dequeue(): SyncJob | undefined {
+  public dequeue(): SyncJob<T> | undefined {
     const job = this.queue.shift();
     this.persistToStorage();
     return job;
   }
 
-  public requeue(job: SyncJob): void {
+  public requeue(job: SyncJob<T>): void {
     job.retryCount += 1;
     this.persistToStorage();
   }
